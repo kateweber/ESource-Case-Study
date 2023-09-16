@@ -6,12 +6,12 @@ from sparkinit import *
 def cleanData():
     spark = getSession()
 
-    file_path = "/Users/kateweber/dev/ESource-Case-Study/results/utility1_install_der_bronze"
+    file_path = "/Users/kateweber/dev/ESource-Case-Study/results/utility1_planned_der_bronze"
 
     transformSQL = """
             with unpivoted as (
                 SELECT *
-                FROM utility1_install_der
+                FROM utility1_planned_der
                 UNPIVOT (
                     val FOR der_type IN (SolarPV, EnergyStorageSystem, Wind, MicroTurbine, SynchronousGenerator, InductionGenerator, FarmWaste, FuelCell, CombinedHeatandPower, GasTurbine, Hydro, InternalCombustionEngine, SteamTurbine, Other)
                 )
@@ -21,8 +21,8 @@ def cleanData():
                 , der_type
                 , NamePlateRating as namplate_rating
                 , ProjectCircuitID as circuit_id
-                , 'Installed' as status
-                , to_date(null) as planned_install_date
+                , 'Planned' as status
+                , InServiceDate as planned_install_date
             FROM unpivoted 
             WHERE val > 0
         """
@@ -33,8 +33,8 @@ def cleanData():
 
     #todo: write to s3
 
-    df.createOrReplaceTempView("utility1_install_der")
+    df.createOrReplaceTempView("utility1_planned_der")
 
     result = spark.sql(transformSQL)
 
-    result.write.save('/Users/kateweber/dev/ESource-Case-Study/results/utility1_install_der_silver', format='parquet', mode='overwrite')
+    result.write.save('/Users/kateweber/dev/ESource-Case-Study/results/utility1_planned_der_silver', format='parquet', mode='overwrite')

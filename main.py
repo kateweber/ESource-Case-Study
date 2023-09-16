@@ -7,10 +7,10 @@ sys.path.append('/Users/kateweber/dev/ESource-Case-Study/processors/gold')
 import utility1_feeder_raw, utility2_feeder_raw, utility1_install_der_raw, utility1_planned_der_raw, utility2_install_der_raw, utility2_planned_der_raw
 
 #Silver processors
-import utility1_feeder, utility2_feeder, utility1_install_der
+import utility1_feeder, utility2_feeder, utility1_install_der, utility1_planned_der
 
 #Gold processors
-import circuits
+import circuits, der
 
 def refreshData():
 
@@ -26,9 +26,11 @@ def refreshData():
     utility1_feeder.cleanData()
     utility2_feeder.cleanData()
     utility1_install_der.cleanData()
+    utility1_planned_der.cleanData()
 
     #todo: call gold level refresh jobs if silver succeeded
     circuits.finalTransform()
+    der.finalTransform()
 
     return
 

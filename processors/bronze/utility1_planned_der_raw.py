@@ -8,7 +8,7 @@ def loadSource():
 
     schema = StructType([
         StructField("ProjectType", StringType(), nullable=False)
-        , StructField("NamePlateRating", DecimalType(5,4), nullable=False)
+        , StructField("NamePlateRating", DecimalType(38,2), nullable=False)
         , StructField("InServiceDate", DateType(), nullable=True)
         , StructField("ProjectStatus", StringType(), nullable=True)
         , StructField("ProjectID", IntegerType(), nullable=False)
