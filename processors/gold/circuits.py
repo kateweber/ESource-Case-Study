@@ -32,5 +32,3 @@ def finalTransform():
     result = spark.sql(transformSQL)
 
     result.write.save('/Users/kateweber/dev/ESource-Case-Study/results/circuits_gold', format='parquet', mode='overwrite')
-
-    result.show()
