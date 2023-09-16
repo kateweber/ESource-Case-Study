@@ -10,7 +10,7 @@ def cleanData():
 
     transformSQL = """
             SELECT 
-                null as der_id
+                string(null) as der_id
                 , DER_TYPE as der_type
                 , DER_NAMEPLATE_RATING as namplate_rating
                 , DER_INTERCONNECTION_LOCATION as circuit_id

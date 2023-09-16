@@ -1,17 +1,24 @@
+from fastapi import FastAPI
+app = FastAPI()
+
 import sys
 sys.path.append('/Users/kateweber/dev/ESource-Case-Study/processors/bronze')
 sys.path.append('/Users/kateweber/dev/ESource-Case-Study/processors/silver')
 sys.path.append('/Users/kateweber/dev/ESource-Case-Study/processors/gold')
+sys.path.append('/Users/kateweber/dev/ESource-Case-Study/processors')
+
+import sparkinit
 
 #Bronze processors
 import utility1_feeder_raw, utility2_feeder_raw, utility1_install_der_raw, utility1_planned_der_raw, utility2_install_der_raw, utility2_planned_der_raw
 
 #Silver processors
-import utility1_feeder, utility2_feeder, utility1_install_der, utility1_planned_der
+import utility1_feeder, utility2_feeder, utility1_install_der, utility1_planned_der, utility2_install_der, utility2_planned_der
 
 #Gold processors
 import circuits, der
 
+@app.get("/refreshData")
 def refreshData():
 
     #todo: wrap in try except and wait for return
@@ -27,6 +34,8 @@ def refreshData():
     utility2_feeder.cleanData()
     utility1_install_der.cleanData()
     utility1_planned_der.cleanData()
+    utility2_install_der.cleanData()
+    utility2_planned_der.cleanData()
 
     #todo: call gold level refresh jobs if silver succeeded
     circuits.finalTransform()
@@ -34,17 +43,43 @@ def refreshData():
 
     return
 
+@app.get("/getFeeders")
 def getFeeders(maxHostingCapacity):
-    result = ''
-    #todo: get table from gold layer, select * where max capacity > maxHostingCapacity
+    spark = sparkinit.getSession()
 
-    return result
+    file_path = "/Users/kateweber/dev/ESource-Case-Study/results/circuits_gold"
 
+    transformSQL = """
+            SELECT *
+            FROM circuits
+            WHERE feeder_max_hc >= {0}
+        """.format(maxHostingCapacity)
+
+    #todo: wrap in try/except 
+    #todo: fix null handling
+    df = spark.read.load(file_path)
+    #todo: write to s3
+    df.createOrReplaceTempView("circuits")
+    result = spark.sql(transformSQL)
+    return result.toJSON().collect()
+
+@app.get("/getDERsForFeeder")
 def getAllDers(feederID):
-    result = ''
-    #todo: get table from gold layer, select * where circuit_id = feederId
+    spark = sparkinit.getSession()
 
-    return result
+    file_path = "/Users/kateweber/dev/ESource-Case-Study/results/der_gold"
 
-#todo: implement monthly scheduler or event or check for new files (can we put CRON in here?)
-refreshData()
+    transformSQL = """
+            SELECT *
+            FROM der
+            WHERE circuit_id = "{0}"
+            ORDER BY der_id
+        """.format(feederID)
+
+    #todo: wrap in try/except 
+    #todo: fix null handling
+    df = spark.read.load(file_path)
+    #todo: write to s3
+    df.createOrReplaceTempView("der")
+    result = spark.sql(transformSQL)
+    return result.toJSON().collect()
