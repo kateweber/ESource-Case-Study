@@ -12,19 +12,19 @@ There are 3 API requests that can be made:
 `/getFeeders`: returns list of JSON objects of Feeder data where the max hosting capacity for the feeder is greater than `arg(maxHostingCapacity)`
 `/getDERsForFeeder`: returns list of JSON objects of DER data (both planned and installed) where the feeder ID = `arg(feederID)`
 
-Assumptions:
-
-
 ## Developer Notes
 
 ### How To Run Locally:
 1. Install required packages:
+If your machine is not already set up to run pyspark, follow these instructions: https://www.sparkcodehub.com/pyspark-installation. 
+Then install packages:
 ```
 pip install pyspark
 pip install findspark
 pip install fastapi
 pip install uvicorn
 ```
+
 2. Update paths throughout to point to local directories (this step should not be required to run - improvement is noted in "Code Cleanliness section")
 
 3. Spin up API:
@@ -48,6 +48,13 @@ pip install uvicorn
 - Standardize circuitID and derID values (instead of using the values given from utilities as is, wrap them in a hash or md5 with utility name)
     - Prevents duplicates across utilities
     - Standardizes format
+- Currently am using a `select distinct` for reducing grain from segment level to circuit level, but likely should have implemented it as a `group by circuitID` and aggregated at least some of the values, like shape_length
+- Add validation for each transform layer and decide whether we should throw error upon failures or filter out erroneous rows (or some of each depending on type of failure)
+    - Check for duplicate records
+    - Check for nulls
+    - Check for refresh dates that are prior to the previous refresh date for that circuit or DER
+    - Check for acceptable value ranges (for numeric values like min/max hosting capapcity, voltage, and shape length)
+    - etc
 
 ### Code Cleanliness
 - Standardize use of “feeder” vs “circuit” across all code/file names
