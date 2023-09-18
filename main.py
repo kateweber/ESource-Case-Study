@@ -52,11 +52,10 @@ def getFeeders(maxHostingCapacity):
     transformSQL = """
             SELECT *
             FROM circuits
-            WHERE feeder_max_hc >= {0}
+            WHERE feeder_max_hc > {0}
         """.format(maxHostingCapacity)
 
     #todo: wrap in try/except 
-    #todo: fix null handling
     df = spark.read.load(file_path)
     #todo: write to s3
     df.createOrReplaceTempView("circuits")
@@ -77,7 +76,6 @@ def getAllDers(feederID):
         """.format(feederID)
 
     #todo: wrap in try/except 
-    #todo: fix null handling
     df = spark.read.load(file_path)
     #todo: write to s3
     df.createOrReplaceTempView("der")

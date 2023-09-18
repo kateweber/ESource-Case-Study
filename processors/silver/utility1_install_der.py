@@ -28,7 +28,6 @@ def cleanData():
         """
 
     #todo: wrap in try/except 
-    #todo: fix null handling
     df = spark.read.load(file_path)
 
     #todo: write to s3

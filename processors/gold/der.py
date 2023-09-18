@@ -32,7 +32,6 @@ def finalTransform():
         """
 
     #todo: wrap in try/except 
-    #todo: fix null handling
     df_util1_i = spark.read.load(file_path_utility1_install)
     df_util1_p = spark.read.load(file_path_utility1_planned)
     df_util2_i = spark.read.load(file_path_utility2_install)
@@ -48,5 +47,3 @@ def finalTransform():
     result = spark.sql(transformSQL)
 
     result.write.save('/Users/kateweber/dev/ESource-Case-Study/results/der_gold', format='parquet', mode='overwrite')
-
-    result.show()

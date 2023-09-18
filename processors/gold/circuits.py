@@ -20,7 +20,6 @@ def finalTransform():
         """
 
     #todo: wrap in try/except 
-    #todo: fix null handling
     df_util1 = spark.read.load(file_path_utility1)
     df_util2 = spark.read.load(file_path_utility2)
 
