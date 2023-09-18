@@ -8,8 +8,11 @@ The application recieves 3 data sets from each of 5 different utilities operatin
 - Planned DER Data: Project data for DERs that are in the development and interconnection queue. These projects may or may not be completed and eventually result in Installed DER records.
 
 There are 3 API requests that can be made:
+
 `/refreshData`: reloads all datasets (bronze, silver, and gold) using files in `source` directory
+
 `/getFeeders`: returns list of JSON objects of Feeder data where the max hosting capacity for the feeder is greater than `arg(maxHostingCapacity)`
+
 `/getDERsForFeeder`: returns list of JSON objects of DER data (both planned and installed) where the feeder ID = `arg(feederID)`
 
 ## Developer Notes
